@@ -1,4 +1,4 @@
-export type Icono ="gryphon"|"chimera"|"echidna"|"madre-monte"|"scarecrow"|"summoner"|"dragon-2"|"Basilisk"|"bat";
+export type Icono ="gryphon"|"chimera"|"echidna"|"madreMonte"|"scarecrow"|"summoner"|"dragon2"|"Basilisk"|"bat";
 
 export interface DataScore{
     id?:number;

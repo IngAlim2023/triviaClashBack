@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('nombre', 50)
       table.integer('score', 10)
 
-      table.enum('icono',["gryphon","chimera","echidna","madre-monte","scarecrow","summoner","dragon-2","Basilisk","bat"])
+      table.enum('icono',["gryphon","chimera","echidna","madreMonte","scarecrow","summoner","dragon2","Basilisk","bat"])
     })
   }
 
