@@ -4,6 +4,7 @@ import server from '@adonisjs/core/services/server'
 
 let onlineGamer: { name: string }[] = []
 let avaibleRooms: { code: string }[] = []
+let roomsInfo = []
 
 app.ready(() => {
   const io = new Server(server.getNodeServer(), { cors: { origin: '*' } })
@@ -12,6 +13,7 @@ app.ready(() => {
     // ⬅️ Enviar estado actual solo al que entra
     socket.emit('newUser', onlineGamer)
     socket.emit('newRoom', avaibleRooms)
+    socket.emit('rooms', roomsInfo)
 
     socket.on('newUser', (username: string) => {
       const name = String(username).trim()
@@ -22,16 +24,31 @@ app.ready(() => {
     })
 
     socket.on('newRoom', (codeRoom: string) => {
-      const code = String(codeRoom).trim().toUpperCase()
+      const code = String(codeRoom)
       if (!avaibleRooms.find((r) => r.code === code)) {
         avaibleRooms.push({ code })
       }
       io.emit('newRoom', avaibleRooms)
     })
 
-    socket.on('disconnect', () => {
-      console.log('❌ Cliente desconectado:', socket.id)
+    socket.on('rooms', (infoRoom) => {
+
+      // Si la sala ya existe, actualiza las preguntas
+      const index = roomsInfo.findIndex((r) => r.room === infoRoom.room)
+      if (index !== -1) {
+        roomsInfo[index] = infoRoom
+      } else {
+        roomsInfo.push(infoRoom)
+      }
+
+      io.emit('rooms', roomsInfo)
     })
+    socket.on('room:getQuestions', ({ room }, ack) => {
+      const r = roomsInfo.find((r) => r.room === room)
+      if (!r) return ack({ ok: false, error: 'ROOM_NOT_FOUND' })
+      ack({ ok: true, questions: r.questions })
+    })
+
+    socket.on('disconnect', () => {})
   })
 })
-
