@@ -6,38 +6,32 @@ let onlineGamer: { name: string }[] = []
 let avaibleRooms: { code: string }[] = []
 
 app.ready(() => {
-  const io = new Server(server.getNodeServer(), {
-    cors: {
-      origin: '*',
-    },
-  })
+  const io = new Server(server.getNodeServer(), { cors: { origin: '*' } })
+
   io.on('connection', (socket) => {
+    // ⬅️ Enviar estado actual solo al que entra
+    socket.emit('newUser', onlineGamer)
+    socket.emit('newRoom', avaibleRooms)
+
     socket.on('newUser', (username: string) => {
-      console.log(`Nuevo jugador: ${username}`)
-
-      // Guardar en lista (solo si no existe ya)
-      if (!onlineGamer.find((u) => u.name === username)) {
-        onlineGamer.push({ name: username })
+      const name = String(username).trim()
+      if (!onlineGamer.find((u) => u.name.toLowerCase() === name.toLowerCase())) {
+        onlineGamer.push({ name })
       }
-
-      // Emitir a todos los clientes la lista actualizada
       io.emit('newUser', onlineGamer)
     })
+
     socket.on('newRoom', (codeRoom: string) => {
-      console.log(`Nueva Room: ${codeRoom}`)
-
-      // Guardar en lista (solo si no existe ya)
-      if (!avaibleRooms.find((u) => u.code === codeRoom)) {
-        avaibleRooms.push({ code: codeRoom })
+      const code = String(codeRoom).trim().toUpperCase()
+      if (!avaibleRooms.find((r) => r.code === code)) {
+        avaibleRooms.push({ code })
       }
-
-      // Emitir a todos los clientes la lista actualizada
       io.emit('newRoom', avaibleRooms)
     })
 
-    // Detectar desconexión
     socket.on('disconnect', () => {
       console.log('❌ Cliente desconectado:', socket.id)
     })
   })
 })
+
