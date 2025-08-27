@@ -10,7 +10,6 @@ app.ready(() => {
   const io = new Server(server.getNodeServer(), { cors: { origin: '*' } })
 
   io.on('connection', (socket) => {
-    // ⬅️ Enviar estado actual solo al que entra
     socket.emit('newUser', onlineGamer)
     socket.emit('newRoom', avaibleRooms)
     socket.emit('rooms', roomsInfo)
@@ -32,8 +31,6 @@ app.ready(() => {
     })
 
     socket.on('rooms', (infoRoom) => {
-
-      // Si la sala ya existe, actualiza las preguntas
       const index = roomsInfo.findIndex((r) => r.room === infoRoom.room)
       if (index !== -1) {
         roomsInfo[index] = infoRoom
