@@ -2,9 +2,14 @@ import app from '@adonisjs/core/services/app'
 import { Server } from 'socket.io'
 import server from '@adonisjs/core/services/server'
 
+type RoomInfo = {
+  room: string
+  questions?: string[]
+}
+
 let onlineGamer: { name: string }[] = []
 let avaibleRooms: { code: string }[] = []
-let roomsInfo = []
+let roomsInfo:RoomInfo[] = []
 
 app.ready(() => {
   const io = new Server(server.getNodeServer(), { cors: { origin: '*' } })
